@@ -48,13 +48,13 @@ model Problem{
   tag String[]  //["tag1"] ["tag2"]..
   userId String
   examples Json
-  constarints String
+ constraints String
   hints String
   editorial String
 
   testCases Json
-  codeSnipptes Json
-  refranceSolutions Json
+ codeSnippets Json
+  referenceSolutions Json
  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

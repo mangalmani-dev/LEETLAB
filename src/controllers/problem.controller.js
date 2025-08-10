@@ -4,8 +4,8 @@ export const createProblem=async (req,res)=>{
 
     // going to get all the data from the request body
 
-    const {title, description,  difficulty,tag,examples,constarints ,  testCases, 
-         codeSnipptes,refranceSolutions}= req.body
+    const {title, description,  difficulty,tag,examples,constraints ,  testCases, 
+          codeSnippets,referenceSolutions}= req.body
      
     //going to get the user role once again
 

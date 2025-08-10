@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { db } from "../libs/db.js";
 import { UserRole } from "../generated/prisma/index.js";
 
+     // register controllers
 export const register = async (req, res) => {
   const { email, password, name } = req.body;
 
@@ -54,6 +55,7 @@ export const register = async (req, res) => {
   }
 };
 
+    // login controllers
 export const login=async(req, res)=>{
     const {email,password}=req.body;
 try {
@@ -104,6 +106,8 @@ const token= jwt.sign({ id: user.id }, process.env.JWT_SECRET, {
 }
 }
 
+// logut user
+
 export const logout=async(req, res)=>{
     try {
         res.clearCookie("jwt",{
@@ -121,6 +125,8 @@ export const logout=async(req, res)=>{
     }
 
 }
+
+// check
 
 export const check = async (req, res) => {
   try {
