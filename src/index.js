@@ -7,21 +7,24 @@ import problemsRoutes from "./routes/problem.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 dotenv.config()
 
+// here we are providing power of express to app
 const app=express();
 
-
+// here we are make our app to get json file give and take
 app.use(express.json())
 
+// we are allowing the cookie related stuff
 app.use(cookieParser())
 
+// we are making api for authencation
 app.use('/api/v1/auth',authRoutes)
 
+// we are makig the problems realated api
 app.use('/api/v1/problems',problemsRoutes)
 
-app.use("/",(req,res)=>{
+app.get("/",(req,res)=>{
     res.send("hello jee kiya hal chal")
 })
-
 
 
 

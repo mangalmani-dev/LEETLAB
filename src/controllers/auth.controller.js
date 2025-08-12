@@ -121,7 +121,10 @@ export const logout=async(req, res)=>{
         })
         
     } catch (error) {
-        
+        return res.status(221).json({
+          message:"User unable to logout",
+          error:error
+        })
     }
 
 }
