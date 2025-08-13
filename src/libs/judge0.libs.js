@@ -12,7 +12,7 @@ export const getJudge0LanguageId =(language)=>{
 
 
 export const submitBatch= async(submission)=>{
-    const {data}=await axios.post(`${Process.env.JUDGE0_API_URL}/submission/batch?base64_encoded=false`,{
+    const {data}=await axios.post(`${process.env.JUDGE0_API_URL}/submission/batch?base64_encoded=false`,{
         submission
     })
 

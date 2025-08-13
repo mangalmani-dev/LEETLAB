@@ -2,13 +2,10 @@ import {db} from "../libs/db.js"
 import { pollBatchResult } from "../libs/judge0.libs.js"
 export const createProblem=async (req,res)=>{
 
-    // going to get all the data from the request body
+    const {title,  description,difficulty , tag ,examples,  constraints ,   testCases, 
+           codeSnippets,referenceSolutions }= req.body
 
-    const {title, description,  difficulty,tag,examples,constraints ,  testCases, 
-          codeSnippets,referenceSolutions}= req.body
-     
-    //going to get the user role once again
-
+           // check the role of user
     if(req.user.role!=='ADMIN'){
         res.status(403).json({
             error:"you are not allowed to create a problem"
@@ -16,9 +13,9 @@ export const createProblem=async (req,res)=>{
     }
 
     try {
-         for(const [language,solutionCode] of Object.entries(refranceSolutions)){// hum log language and uska code nikal rahe hai
+         for(const [language,solutionCode] of Object.entries(referenceSolutions)){// hum log language and uska code nikal rahe hai
         const languageId=getJudge0LanguageId(language)
-         
+
 
          if(!languageId){
             return res.status(400).json({
@@ -53,8 +50,8 @@ export const createProblem=async (req,res)=>{
 
             const newProblem=await db.problem.create({
                 data:{
-                    title, description,  difficulty,tag,examples,constarints ,  testCases, 
-                     codeSnipptes,refranceSolutions,userId:req.user.id
+                    title, description,  difficulty,tag,examples, constraints ,  testCases, 
+                        codeSnippets,referenceSolutions,userId:req.user.id
                 }
             })
 
