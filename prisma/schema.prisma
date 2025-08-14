@@ -49,8 +49,8 @@ model Problem{
   userId String
   examples Json
  constraints String
-  hints String
-  editorial String
+  hints String ?
+  editorial String ?
 
   testCases Json
  codeSnippets Json
