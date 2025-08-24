@@ -192,6 +192,96 @@ export const deleteProblem = async (req, res) => {
 };
 
 
-// assigment
-export const updateProblem = async (req, res) => {};
+export const updateProblem = async (req, res) => {
+  const problemId = req.params.id;
+  const {
+    title,
+    description,
+    difficulty,
+    tag,
+    examples,
+    constraints,
+    hints = "",
+    editorial = "",
+    testCases,
+    codeSnippets,
+    referenceSolutions,
+  } = req.body;
 
+  if (req.user.role !== "ADMIN") {
+    return res.status(403).json({ error: "You are not allowed to update a problem" });
+  }
+
+  try {
+    // Validate reference solutions with Judge0
+    for (const [language, solutionCode] of Object.entries(referenceSolutions)) {
+      const languageId = getJudge0LanguageId(language);
+      if (!languageId) return res.status(400).json({ error: `Language ${language} is not supported` });
+      if (!solutionCode || solutionCode.trim() === "")
+        return res.status(400).json({ error: `Reference solution for ${language} cannot be empty` });
+
+      const submissions = testCases.map(({ input, output }) => ({
+        source_code: solutionCode,
+        language_id: languageId,
+        stdin: input,
+        expected_output: output,
+      }));
+
+      let submissionResult;
+      try {
+        submissionResult = await submitBatch(submissions);
+      } catch (err) {
+        console.error("Judge0 submission failed:", err.response?.data || err.message);
+        return res.status(500).json({ error: "Judge0 submission failed" });
+      }
+
+      const tokens = submissionResult.map((r) => r.token);
+
+      let results;
+      try {
+        results = await pollBatchResults(tokens);
+      } catch (err) {
+        console.error("Error polling Judge0 results:", err.response?.data || err.message);
+        return res.status(500).json({ error: "Error polling Judge0 results" });
+      }
+
+      for (let i = 0; i < results.length; i++) {
+        const result = results[i];
+        if (result.status.id !== 3) {
+          return res.status(400).json({
+            error: `Testcase ${i + 1} failed for language ${language}`,
+            details: result,
+          });
+        }
+      }
+    }
+
+    // Update problem in DB
+    const updatedProblem = await db.problem.update({
+      where: { id: problemId },
+      data: {
+        title,
+        description,
+        difficulty,
+        tag,
+        examples,
+        constraints,
+        hints,
+        editorial,
+        testCases,
+        codeSnippets,
+        referenceSolutions,
+        userId: req.user.id,
+      },
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Problem Updated Successfully",
+      problem: updatedProblem,
+    });
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return res.status(500).json({ error: "Error While Updating Problem", details: error.message });
+  }
+};

@@ -18,10 +18,4 @@ import { createProblem ,getAllProblems,updateProblem,getProblemById,getAllSolved
 
  problemsRoutes.get("/get-solved-problems",authmiddleware,getAllSolvedProblemsByUser)
 
-
-
-
-
-
-
  export default problemsRoutes

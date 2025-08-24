@@ -2,8 +2,7 @@ import express from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import problemsRoutes from "./routes/problem.routes.js";
-
-
+import excutionRoute from "./routes/excute.route.js";
 import authRoutes from "./routes/auth.routes.js";
 dotenv.config()
 
@@ -21,6 +20,10 @@ app.use('/api/v1/auth',authRoutes)
 
 // we are makig the problems realated api
 app.use('/api/v1/problems',problemsRoutes)
+
+// we are making code excuatioon 
+
+app.use('/api/v1/execute-code',excutionRoute)
 
 app.get("/",(req,res)=>{
     res.send("hello jee kiya hal chal")

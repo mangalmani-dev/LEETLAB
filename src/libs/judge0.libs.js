@@ -1,5 +1,6 @@
 import axios from "axios";
 
+// Get Judge0 language ID from language name
 export const getJudge0LanguageId = (language) => {
   const languageMap = {
     PYTHON: 71,
@@ -10,8 +11,10 @@ export const getJudge0LanguageId = (language) => {
   return languageMap[language.toUpperCase()];
 };
 
+// Sleep helper for polling
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+// Poll Judge0 batch submissions until all are done
 export const pollBatchResults = async (tokens) => {
   while (true) {
     const { data } = await axios.get(`${process.env.JUDGE0_API_URL}/submissions/batch`, {
@@ -31,13 +34,14 @@ export const pollBatchResults = async (tokens) => {
   }
 };
 
+// Submit a batch of code submissions to Judge0
 export const submitBatch = async (submissions) => {
-  // Map your current keys to Judge0 expected keys
+  // Map your submissions to Judge0 expected keys with fallback
   const payload = submissions.map((s) => ({
-    source_code: s.source_Code,
-    language_id: s.language_Id,
-    stdin: s.stdInp,
-    expected_output: s.expected_Output,
+    source_code: s.source_code || s.source_Code,
+    language_id: s.language_id || s.language_Id,
+    stdin: s.stdin || s.stdInp,
+    expected_output: s.expected_output || s.expected_Output,
   }));
 
   const { data } = await axios.post(
@@ -47,5 +51,5 @@ export const submitBatch = async (submissions) => {
 
   console.log("Submission Results: ", data);
 
-  return data; // [{ token }, { token }, { token }]
+  return data; // Returns array like [{ token }, { token }, ...]
 };
