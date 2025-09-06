@@ -1,6 +1,7 @@
 import { db } from "../libs/db.js";
 import { pollBatchResults, getJudge0LanguageId, submitBatch } from "../libs/judge0.libs.js";
-   // create problem
+
+// create problem
 export const createProblem = async (req, res) => {
   const {
     title,
@@ -24,6 +25,15 @@ export const createProblem = async (req, res) => {
   }
 
   try {
+    // Basic validation
+    if (!Array.isArray(testCases) || testCases.length === 0) {
+      return res.status(400).json({ error: "At least one test case is required" });
+    }
+
+    if (!referenceSolutions || Object.keys(referenceSolutions).length === 0) {
+      return res.status(400).json({ error: "Reference solutions are required" });
+    }
+
     // Validate all reference solutions before saving
     for (const [language, solutionCode] of Object.entries(referenceSolutions)) {
       const languageId = getJudge0LanguageId(language);
@@ -107,7 +117,15 @@ export const createProblem = async (req, res) => {
 //  get all problems
 export const getAllProblems = async (req, res) => {
   try {
-    const problems = await db.problem.findMany(); // 
+    const problems = await db.problem.findMany({
+      include :{
+        solvedBy:{
+          where:{
+            userId:req.user.id
+          }
+        }
+      }
+    }); // 
 
     if (!problems || problems.length === 0) {
       return res.status(404).json({
@@ -129,7 +147,7 @@ export const getAllProblems = async (req, res) => {
     });
   }
 };
-  // get problem by id
+// get problem by id
 export const getProblemById = async (req, res) => {
   const { id } = req.params;
 
@@ -160,36 +178,36 @@ export const getProblemById = async (req, res) => {
 };
 
 export const getAllSolvedProblemsByUser = async (req, res) => {
-    try {
-      const problems =await db.problem.findMany({
-        where:{
-          solvedBy:{
-            some:{
-              userId:req.user.id
-            }
-          }
-        },
-        include:{
-          solvedBy:{
-            where:{
-              userId:req.user.id
-            }
+  try {
+    const problems = await db.problem.findMany({
+      where: {
+        solvedBy: {
+          some: {
+            userId: req.user.id
           }
         }
-      })
-      res.status(200).json({
-        success:true,
-        message:"problems fetched successfully",
-        problems
-      })
-      
-    } catch (error) {
-      console.error("error fetching problem",error)
-      res.status(500).json({
-        error:"failed to fetch problem"
-      })
-      
-    }
+      },
+      include: {
+        solvedBy: {
+          where: {
+            userId: req.user.id
+          }
+        }
+      }
+    })
+    res.status(200).json({
+      success: true,
+      message: "problems fetched successfully",
+      problems
+    })
+
+  } catch (error) {
+    console.error("error fetching problem", error)
+    res.status(500).json({
+      error: "failed to fetch problem"
+    })
+
+  }
 
 };
 

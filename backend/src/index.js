@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors"
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import problemsRoutes from "./routes/problem.routes.js";
@@ -14,8 +15,18 @@ const app=express();
 // here we are make our app to get json file give and take
 app.use(express.json())
 
+app.use(express.urlencoded({ extended: true }));
+
 // we are allowing the cookie related stuff
 app.use(cookieParser())
+
+// using cors
+app.use(
+    cors({
+        origin :" http://localhost:5173",
+        credentials:true
+    })
+)
 
 // we are making api for authencation
 app.use('/api/v1/auth',authRoutes)
