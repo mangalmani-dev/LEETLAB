@@ -11,6 +11,7 @@ import HomePage from './page/HomePage';
 import AddProblem from './page/AddProblem';
 
 import { useAuthStore } from './store/useAuthStore';
+import ProblemPage from './page/ProblemPage';
 
 
 const App = () => {
@@ -49,6 +50,13 @@ const App = () => {
           path="/signup"
           element={!authUser ? <SignUpPage /> : <Navigate to="/" />}
         />
+   
+        <Route
+
+        path='/problem/:id'
+           element =  {authUser ? <ProblemPage/>: <Navigate to={"/login"}/>}
+        />
+           
 
 
         {/* Admin-only route */}

@@ -2,18 +2,15 @@ import { create } from "zustand"
 import { axiosInstance } from "../libs/axios"
 import toast from "react-hot-toast"
 
-
 export const useProblemStore = create((set) => ({
 
   problems: [],
   problem: null,
-  solvedProblem: [],
+  solvedProblem: [],   
   isProblemsLoading: false,
   isProblemLoading: false,
 
-
   getAllProblem: async () => {
-
     try {
       set({ isProblemLoading: true })
 
@@ -36,8 +33,8 @@ export const useProblemStore = create((set) => ({
       // Fetch a single problem by ID
       const res = await axiosInstance.get(`/problems/get-problem/${id}`);
 
-      // Update state with fetched problem
-      set({ currentProblem: res.data.problem });
+      // ✅ Fix: problem state ko update karo (na ki currentProblem)
+      set({ problem: res.data.problem });
     } catch (error) {
       console.error(`Error getting problem with ID ${id}:`, error);
       toast.error("Error fetching the problem");
@@ -47,7 +44,6 @@ export const useProblemStore = create((set) => ({
     }
   },
 
-
   getSolvedProblemByUser: async () => {
     try {
       // Set loading state
@@ -56,8 +52,8 @@ export const useProblemStore = create((set) => ({
       // Fetch solved problems for a specific user
       const res = await axiosInstance.get("/problems/get-solved-problem");
 
-      // Update state with the solved problems
-      set({ solvedProblems: res.data.problems });
+     
+      set({ solvedProblem: res.data.problems });
     } catch (error) {
       console.error(`Error fetching solved problems`, error);
       toast.error("Error fetching solved problems");
@@ -67,4 +63,3 @@ export const useProblemStore = create((set) => ({
     }
   },
 }))
-
